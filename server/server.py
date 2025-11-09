@@ -1,24 +1,28 @@
-# Main server program: it will send pings to all stored IPs
-# Needs a way to store IPs in a file it can read over and over
+## Main server program: it will send pings to all stored IPs
 
 import icmplib as icmp
 from StoreIP import StoreIPAddress as SIP 
 
-SIP.defineStorageFile("Direcciones.txt")
-if (SIP.writeIPAddress("127.0.0.1", "Direcciones.txt") == 1):
-    print("Funciona correctamente")
-else:
-    print("Vida hp")
-
-# let's do the code for reals lmao
-
-def updateIPList(IPAddressFile: str) -> list:
-    with open(IPAddressFile, 'r') as addressList:
-        IPs = file.read().splitlines()
+def updateIPList(IPAddressFile: str) -> None:
+    try:
+        with open(IPAddressFile, 'r') as addressList:
+            IPs = addressList.read().splitlines()
+            # debug stuff
+            print(type(IPs), IPs)
+    except:
+        print("Error accediendo a la lista de direcciones IP")
+        
     pass
 
-def pingKnownIPs(IPlist: str) -> None:
+def pingKnownIPs(IPAddressFile: str) -> None:
     pass
 
 # the actual listening to IPs thing should happen always so idk if a separate function would really be needed.
 
+
+if __name__ == "__main__":
+    SIP.defineStorageFile("Direcciones.txt")
+    if (SIP.writeIPAddress("127.0.0.1", "Direcciones.txt") == 1):
+        print("Funciona correctamente")
+    else:
+        print("Vida hp")

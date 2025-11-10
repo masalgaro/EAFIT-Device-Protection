@@ -33,8 +33,17 @@ class StoreIPAddress:
                 if line.strip("\n") != IPaddress:
                     storageFile.write(line)
             print("IP eliminada de manera correcta.")
-            return 0
+            return 1 # Returns 1 if everything worked correctly
         except:
             print("Hubo un error al eliminar la IP. Error -1")
-            return -1
+            return -1 # Returns -1 if there was an error. Uses a different error code to distinguish where the error happened.
+
+    def deleteStorageFile(fileName: str) -> int: # Receives the storage file and removes it
+        if (os.path.isfile(fileName) is False):
+            print("No existe un archivo con este nombre que se pueda eliminar.")
+            return -2 # Returns -2 if it fails deleting the file. Different error code yada yada
+        else:
+            os.remove(fileName)
+            print("Eliminado archivo de almacenamiento.")
+            return 1 # Returns 1 if everything worked correctly
     

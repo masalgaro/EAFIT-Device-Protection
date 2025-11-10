@@ -1,4 +1,4 @@
-# EAFIT-Device-Protection
+# EAFIT Device Protection
 Una forma de realizar alertas de posibles robos de equipos de la universidad con el suficiente tiempo para tomar acciones preventivas.  
 Esta implementación se enfoca en ser ligera y rápida, con el fin de no usar mucho espacio de almacenamiento y reducir el impacto en la banda ancha de la universidad; por esto nuestra implementación no requiere de librerias externas más allá de icmplib.  
 

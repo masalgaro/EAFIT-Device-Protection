@@ -1,5 +1,4 @@
 import os
-import re
 
 ## Handles storage of addresses into a local file, the server will use this file to make a list of all addresses it needs to ping.
 class StoreIPAddress:

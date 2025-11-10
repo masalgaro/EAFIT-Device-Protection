@@ -11,7 +11,7 @@ Se presenta un programa para el servidor central (dentro de la carpeta "server")
 ## Dependencias
 
 El programa usa librerias propias de Python, **con la excepción de [icmplib](https://pypi.org/project/icmplib/)** que se utilizó para realizar los pings.  
-Se usó ICMP como protocolo débido a lo rápido y liviano que es (como contexto, el comando `ping` en la terminal usa este protocolo).  
+Se usó ICMP como protocolo débido a lo rápido, liviano, y flexible que es (por ejemplo, el comando `ping`, tanto en Bash como PowerShell, usa este protocolo).  
 
 ## Créditos
 

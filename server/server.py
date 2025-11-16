@@ -1,5 +1,4 @@
 ## Main server program: it will send pings to all stored IPs
-
 from icmplib import ping, multiping
 from StoreIP import StoreIPAddress as SIP 
 
@@ -53,3 +52,7 @@ if __name__ == "__main__":
     listaIP = updateIPList(arcihvoPrueba)
     pingKnownIPs(listaIP)
 
+# Establecer hilos para manejar múltiples clientes.
+# Es posible hacer esto también con protocolo UDP.
+# Realizar el programa para el cliente.
+# Detectar el nombre del host.

@@ -4,12 +4,13 @@ import socket
 
 print("[INFO]Este es el programa para los clientes/dispositivos de uso público.\n")
 host = socket.gethostname()
+hostSend = bytes(host, "utf-8")
 port = 21115
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cliente.connect((host, port))
 while True:
     try:
-        cliente.sendall(f'{host}') # Send the host name directly.
+        cliente.sendall(hostSend) # Send the host name directly.
         data = cliente.recv(1024)
     
     except socket.error:

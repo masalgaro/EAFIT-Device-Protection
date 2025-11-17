@@ -5,7 +5,7 @@ import socket
 import threading
 import concurrent.futures
 import sys # Para leer los argumentos. 
-import StoreIP as SIP
+from StoreIP import StoreIPAddress as SIP
 
 MAX_THREAD_AMMOUNT = 20 # Establish a maximum number of threads
 

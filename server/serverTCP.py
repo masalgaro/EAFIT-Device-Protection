@@ -2,7 +2,8 @@
 ## Instead of IP addresses this works by storing host names from the socket data. This requires the usage of threading to handle multiple clients at once.
 
 import socket
-import threading # Added in 3.14
+import threading
+import concurrent.futures
 import sys # Para leer los argumentos. 
 import StoreIP as SIP
 
@@ -23,8 +24,8 @@ def updateHostList(HostNameFile: str) -> list[str] or None:
 
 def socketPing(interface: str, port: int) -> None:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((host, port))
-    print(f"{host}, {port}")
+    s.bind((interface, port))
+    print(f"{interface}, {port}")
 
     s.listen(2)
     conn, address = s.accept()
@@ -32,13 +33,14 @@ def socketPing(interface: str, port: int) -> None:
     while True:
         try:
             data = conn.recv(1024)
-            if not data: break
-
-            print("Mensaje recibido: ", data)
-            conn.sendall("Holi")
+            if not data:
+                print(f"[ALERTA]{conn} de la dirección {address} NO responde y puede estar en riesgo.")
+            else:
+                print("Mensaje recibido: ", data)
+                conn.sendall("echo")
 
         except socket.error:
-            print("Error de socket.")
+            print("[ERROR]Error de socket.")
             break
 
     conn.close()
@@ -52,9 +54,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 1: # Specifies a name for the storage file.
         archivoHosts = sys.argv[1]
     else:
-        archivoHosts = "Hosts-Conocidos.txt"
+        archivoHosts = "Hosts-Conocidos.txt" # Different name from the version of the server that uses IP addresses.
     SIP.defineStorageFile(archivoHosts)
 
     host = '' # We will listen from all interfaces
     port = 21115 # Just a random socket that isn't well-known or widely used.
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_THREAD_AMMOUNT) as exe:
+        exe.submit(socketPing, host, port) # Creates threads as needed to ping
     #socketPing(interface=host, port=port)

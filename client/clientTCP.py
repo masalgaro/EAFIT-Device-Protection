@@ -2,7 +2,7 @@
 
 import socket
 
-print("[INFO]Este es el programa para los clientes/dispositivos de uso público en la universidad.\n")
+print("[INFO]Este es el programa para los clientes/dispositivos de uso público.\n")
 host = socket.gethostname()
 port = 21115
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,4 +17,3 @@ while True:
         break
 cliente.close()
 print("[INFO]Terminando programa del cliente.\nEjecute el script nuevamente para que el servidor pueda rastrear el dispositivo de forma correcta.")
-

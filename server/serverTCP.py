@@ -29,27 +29,27 @@ def socketPing(interface: str, port: int) -> None:
 
     s.listen(2)
     conn, address = s.accept()
-    print(f"Conectado con {address}")
+    print(f"Conectado con {address}\n")
     while True:
         try:
             data = conn.recv(1024) # Receive the host name of the client
             if not data:
-                print(f"[ALERTA]Socket {conn} de la dirección {address} NO responde y puede estar en riesgo.")
+                print(f"[ALERTA]Socket {conn} de la dirección {address} NO responde y puede estar en riesgo.\n")
             else:
-                print("[INFO]Mensaje recibido: ", data) # Data should be the host name of the client we're connected to
+                print("[DEBUG]Mensaje recibido: ", data, "\n") # Data should be the host name of the client we're connected to
                 conn.sendall("Echo")
                 clientesActivos.append(data) # Add the host to the known hosts list
                 SIP.writeIPAddress(data, archivoHosts) # Add the host to the storage file
 
         except socket.error:
-            print("[ERROR]Error de socket.")
+            print("[ERROR]Error de socket.\n")
             break
 
     conn.close()
 
 
 if __name__ == "__main__":
-    print("[INFO]Esta versión del programa funciona con sockets TCP, sin embargo requiere que cada host tenga un proceso de cliente activo en todo momento.")
+    print("[INFO]Esta versión del programa funciona con sockets TCP, sin embargo requiere que cada host tenga un proceso de cliente activo en todo momento.\n")
     clientesActivos = []
     archivoHosts = ''
 

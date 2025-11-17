@@ -1,5 +1,6 @@
 ## Main server program: it will send pings to all stored IPs
 from icmplib import ping, multiping
+import sys # Para leer los argumentos.  
 from StoreIP import StoreIPAddress as SIP 
 
 def updateIPList(IPAddressFile: str) -> list[str] or None:
@@ -45,7 +46,12 @@ def pingKnownIPs(IPList: list[str]) -> int:
 
 # The actual listening to IPs thing should happen always so idk if a separate function would really be needed.
 if __name__ == "__main__":
-    arcihvoPrueba = "Direcciones.txt"
+    print("[INFO]Esta versión del programa funciona realizando ping a direcciones IP conocidas.\nEs posible que sea impreciso según la configuración de la red local.")
+    arcihvoPrueba = ""
+    if len(sys.argv) < 1: # Especificar un nombre para el archivo de guardado al ejecutar el servidor
+        arcihvoPrueba = sys.argv[1]
+    else:
+        arcihvoPrueba = "Direcciones.txt"
     SIP.defineStorageFile(arcihvoPrueba)
     SIP.writeIPAddress(IPaddress="127.0.0.1", IPstorageFile=arcihvoPrueba)
     SIP.writeIPAddress(IPaddress="1.1.1.1", IPstorageFile=arcihvoPrueba)

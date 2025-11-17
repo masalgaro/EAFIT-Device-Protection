@@ -32,12 +32,14 @@ def socketPing(interface: str, port: int) -> None:
     print(f"Conectado con {address}")
     while True:
         try:
-            data = conn.recv(1024)
+            data = conn.recv(1024) # Receive the host name of the client
             if not data:
-                print(f"[ALERTA]{conn} de la dirección {address} NO responde y puede estar en riesgo.")
+                print(f"[ALERTA]Socket {conn} de la dirección {address} NO responde y puede estar en riesgo.")
             else:
-                print("Mensaje recibido: ", data)
-                conn.sendall("echo")
+                print("[INFO]Mensaje recibido: ", data) # Data should be the host name of the client we're connected to
+                conn.sendall("Echo")
+                clientesActivos.append(data) # Add the host to the known hosts list
+                SIP.writeIPAddress(data, archivoHosts) # Add the host to the storage file
 
         except socket.error:
             print("[ERROR]Error de socket.")
@@ -62,4 +64,5 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_THREAD_AMMOUNT) as exe:
         exe.submit(socketPing, host, port) # Creates threads as needed to ping
+
     #socketPing(interface=host, port=port)

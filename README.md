@@ -4,16 +4,29 @@ Esta implementación se enfoca en ser ligera y rápida, con el fin de no usar mu
 
 ## Funcionamiento
 
-Se presenta un programa para el servidor central (dentro de la carpeta "server"), y un programa para los clientes o computadoras de la universidad (dentro de la carpeta "client").  
+Existen dos versiones del programa: una es una edición básica que solo requiere al servidor que funciona comprobando conectividad con direcciones IP conocidas, la otra es una aplicación cliente-servidor que funciona utilizando sockets.  
 
-**El servidor** se dedica a realizar pings de forma periódica a las direcciones IP que conoce, y escuchar mensajes de los clientes que le índican si debe incluir o excluir su IP de este procedimiento. Si una de las direcciones IP guardadas no responde al ping, el servidor realizará una alerta de un posible robo o daño al equipo.  
+Al momento de ejecutar cualquiera de las dos versiones, se puede pasar un argumento que índica el nombre del archivo de almacenamiento de la forma:  
 
-**El cliente** envía su dirección IP al servidor para que pueda detectar si sigue prendido o conectado a la red, o bien para decirle al servidor que deje de monitorear el dispositivo, que se debe ejecutar cuándo el equipo se va a apagar de manera órganica o trasladar por personal autorizado. No necesita ejecutarse el programa el resto del tiempo para poder recibir pings del servidor.  
+```bash
+python3 server.py Direcciones.txt # Usando la versión con direcciones IP conocidas
+python3 serverTCP.py Host-Conocidos.txt # Usando la versión con sockets
+```
+
+### Edición de direcciones IP conocidas
+
+Se encuentra dentro de la carpeta "server" como el archivo `server.py`. Consiste en una aplicación simple que utiliza el protocolo *ICMP* para comprobar la conectividad con direcciones IP que conozca. Para que este programa funcione se deben agregar direcciones IP a una lista, por lo que presenta limitaciones en redes más complejas donde las direcciones IP puedan cambiar. Puede ser una implementación útil en redes locales donde el administrador de la red conoce las direcciones IP de los dispositivos en su interior.  
+La ventaja de esta implementación es la facilidad de uso y la eficiencia, ya que la única libreria externa que requiere es **[icmplib](https://pypi.org/project/icmplib/)** para realizar ping, y no se requiere un programa para los clientes, minimizando el consumo de recursos.  
+
+### Edición de cliente-servidor con sockets
+
+El archivo del servidor se encuentra dentro de la carpeta "server" bajo el nombre de `serverTCP.py`, el archivo del cliente se encuentra dentro de "client" como `clientTCP.py`.  
+Esta implementación **no usa librerias externas** a las que Python ofrece por defecto, pero sí requiere que todos los dispositivos que se desean monitorear ejecuten y mantengan abierto el programa para el cliente, lo que podría tener impactos menores en el rendimiento.  
+La ventaja de esta implementación es que es escalable y versátil en espacios donde las direcciones IP pueden cambiar con el tiempo, ya que en vez de fijarse en una dirección específica se fija en el nombre del host del cliente.
 
 ## Dependencias
 
-El programa usa librerias propias de Python, **con la excepción de [icmplib](https://pypi.org/project/icmplib/)**, que se utilizó para realizar los pings.  
-Se usó ICMP como protocolo débido a lo rápido, liviano, y flexible que es (por ejemplo, el comando `ping`, tanto en Bash como PowerShell, usa este protocolo).  
+El programa usa librerias propias de Python, **con la excepción de [icmplib](https://pypi.org/project/icmplib/)**, que se usa en la versión del server que trabaja con direcciones IP conocidas para realizar pings a los dispositivos que se desean monitorear.  
 
 ## Créditos
 

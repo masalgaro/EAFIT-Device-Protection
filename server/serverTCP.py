@@ -59,7 +59,7 @@ if __name__ == "__main__":
         archivoHosts = "Hosts-Conocidos.txt" # Different name from the version of the server that uses IP addresses.
     SIP.defineStorageFile(archivoHosts)
 
-    host = '' # We will listen from all interfaces
+    host = '0.0.0.0' # We will listen from all interfaces
     port = 21115 # Just a random socket that isn't well-known or widely used.
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

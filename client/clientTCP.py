@@ -9,7 +9,7 @@ while True:
     hostSend = bytes(host, "utf-8")
     port = 21115
     cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cliente.connect((host, port))
+    cliente.connect(('0.0.0.0', port))
     try:
         cliente.sendall(hostSend) # Send the host name directly.
         print("[DEBUG]Enviado el nombre del host al servidor.\n")

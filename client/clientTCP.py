@@ -4,7 +4,6 @@ import sys
 
 def main():
 
-    # 1. Validar argumentos
     if len(sys.argv) < 2:
         print("[ERROR] Uso correcto: python3 clientTCP.py <IP_del_servidor>")
         sys.exit(1)
@@ -15,29 +14,20 @@ def main():
     print("[INFO] Cliente TCP iniciado.")
     print(f"[INFO] Conectándose al servidor en {server_ip}:{server_port}")
 
-    # Obtener nombre del host
     hostname = socket.gethostname()
-    hostname = "PC_33-202"
     hostname_bytes = hostname.encode("utf-8")
 
 
     while True:
         cliente = None
         try:
-            # 2. Crear socket
             cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            cliente.settimeout(10)  # evita bloqueos eternos
-
-            # 3. Intentar conexión
+            cliente.settimeout(10)  # Times out connection to avoid getting stuck
             cliente.connect((server_ip, server_port))
             print("[DEBUG] Conectado con éxito al servidor.")
-
-            # 4. Enviar nombre del host
             cliente.sendall(hostname_bytes)
             print(f"[DEBUG] Enviado nombre del host: {hostname}")
-
-            # 5. Esperar 10 segundos antes del siguiente ciclo
-            time.sleep(10)
+            time.sleep(10) # Wait for next message
 
         except (socket.timeout, ConnectionRefusedError) as e:
             print(f"[ERROR] No se pudo conectar: {e}")

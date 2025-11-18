@@ -19,7 +19,7 @@ class StoreIPAddress:
                 storageFile.write(IPaddress + "\n")
             return 1 # Returns 1 if everything worked correctly
         except Exception as e:
-            print("[ERROR]Error accediendo al archivo. Error 0")
+            print("[ERROR]Error accediendo al archivo. Error 0. Excepción: " + e)
             return 0 # Returns 0 if it couldn't write the IP address.
     
     def deleteClientInfo(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address that needs to be deleted from the file
@@ -34,8 +34,8 @@ class StoreIPAddress:
                     storageFile.write(line)
             print("[INFO]IP eliminada de manera correcta.")
             return 1 # Returns 1 if everything worked correctly
-        except:
-            print("[ERROR]Hubo un error al eliminar la IP. Error -1")
+        except Exception as e:
+            print("[ERROR]Hubo un error al eliminar la IP. Error -1. Excepción: " + e)
             return -1 # Returns -1 if there was an error. Uses a different error code to distinguish where the error happened.
 
     def deleteStorageFile(fileName: str) -> int: # Receives the storage file and removes it

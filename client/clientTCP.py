@@ -1,32 +1,57 @@
-## Client program that connects with serverTCP.
+import socket
+import time
+import sys
 
-import socket, time, sys
+def main():
 
-if len(sys.argv) < 1:
-    print("[ERROR]El programa requiere que se agregue una dirección IP para el servidor al ejecutarse.")
-    print("[ERROR]El método de ejecución debe ser similar a: python3 clientTCP.py 127.0.0.1")
-    sys.exit(1)
+    # 1. Validar argumentos
+    if len(sys.argv) < 2:
+        print("[ERROR] Uso correcto: python3 clientTCP.py <IP_del_servidor>")
+        sys.exit(1)
 
-print("[INFO]Este es el programa para los clientes/dispositivos de uso público.\n")
-serverAddr = ''
-serverAddr = sys.argv[1]
-print(f"[INFO]El cliente va a conectarse al servidor con la dirección IP {serverAddr}")
-while True:
-    host = socket.gethostname()
-    hostSend = bytes(host, "utf-8")
-    port = 21115
-    cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cliente.connect((serverAddr, port))
-    try:
-        cliente.sendall(hostSend) # Send the host name directly.
-        print("[DEBUG]Enviado el nombre del host al servidor.\n")
-        data = cliente.recv(1024)
-        print("[DEBUG]Recibido ", data, " del servidor.\n")
-        time.sleep(10)
-    
-    except socket.error:
-        print("[ERROR]Error de socket.\n")
-        break
+    server_ip = sys.argv[1]
+    server_port = 21115
 
-cliente.close()
-print("[ALERTA]Terminando programa del cliente.\nEjecute el script nuevamente para que el servidor pueda rastrear el dispositivo de forma correcta.")
+    print("[INFO] Cliente TCP iniciado.")
+    print(f"[INFO] Conectándose al servidor en {server_ip}:{server_port}")
+
+    # Obtener nombre del host
+    hostname = socket.gethostname()
+    hostname = "PC_33-202"
+    hostname_bytes = hostname.encode("utf-8")
+
+
+    while True:
+        cliente = None
+        try:
+            # 2. Crear socket
+            cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            cliente.settimeout(10)  # evita bloqueos eternos
+
+            # 3. Intentar conexión
+            cliente.connect((server_ip, server_port))
+            print("[DEBUG] Conectado con éxito al servidor.")
+
+            # 4. Enviar nombre del host
+            cliente.sendall(hostname_bytes)
+            print(f"[DEBUG] Enviado nombre del host: {hostname}")
+
+            # 5. Esperar 10 segundos antes del siguiente ciclo
+            time.sleep(10)
+
+        except (socket.timeout, ConnectionRefusedError) as e:
+            print(f"[ERROR] No se pudo conectar: {e}")
+            print("[INFO] Reintentando conexión en 5 segundos...")
+            time.sleep(5)
+
+        except Exception as e:
+            print(f"[ERROR] Excepción inesperada: {e}")
+            print("[INFO] Abortando cliente.")
+            break
+
+        finally:
+            if cliente:
+                cliente.close()
+
+if __name__ == "__main__":
+    main()

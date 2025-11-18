@@ -15,10 +15,10 @@ class StoreIPAddress:
     def writeClientInfo(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address and returns an int to indicate if it was added succesfully or not
         try:
             with open(IPstorageFile, 'a') as storageFile:
+
                 storageFile.write(IPaddress + "\n")
-                storageFile.close()
-                return 1 # Returns 1 if everything worked correctly
-        except:
+            return 1 # Returns 1 if everything worked correctly
+        except Exception as e:
             print("[ERROR]Error accediendo al archivo. Error 0")
             return 0 # Returns 0 if it couldn't write the IP address.
     

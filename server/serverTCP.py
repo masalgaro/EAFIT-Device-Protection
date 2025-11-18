@@ -1,70 +1,104 @@
-## Alternative server program that works using sockets and raw TCP messages.
-## Instead of IP addresses this works by storing host names from the socket data. This requires the usage of threading to handle multiple clients at once.
-
 import socket
-import threading
-import concurrent.futures
 import sys
+import threading
+import time
 from StoreIP import StoreIPAddress as SIP
 
-MAX_THREAD_AMMOUNT = 20 # Establish a maximum number of threads
+CHECK_INTERVAL = 10          # Cada cuánto revisar inactividad
+CLIENT_TIMEOUT = 30          # Si un cliente no envía datos en este tiempo alertar
 
-def updateHostList(HostNameFile: str) -> list[str] or None:
+# Diccionario en memoria para saber último contacto con cada host
+last_seen = {}   # { "hostname": timestamp }
+
+def load_known_hosts(archivoHosts: str) -> set[str]:
+    """Carga hosts en memoria para evitar duplicados."""
     try:
-        with open(HostNameFile, 'r') as HostList:
-            hostnames = HostList.read().splitlines()
-            # debug stuff
-            print(type(hostnames), hostnames)
-            HostList.close()
-            return hostnames
-    except:
-        print("Error accediendo a la lista de nombres de host.")
-        return
+        with open(archivoHosts, 'r') as f:
+            hosts = set(f.read().splitlines())
+        print("[DEBUG] Hosts cargados:", hosts)
+        return hosts
+    except FileNotFoundError:
+        return set()
 
 
-def echoClients(interface: str, port: int) -> None:
+def monitor_clients(known_hosts: set[str]):
+    """Revisa periódicamente que los hosts registrados sigan enviando datos."""
+    while True:
+        time.sleep(CHECK_INTERVAL)
+
+        now = time.time()
+
+        for host in known_hosts:
+            if host not in last_seen:
+                # Aún no ha enviado nada desde que se cargó el archivo
+                continue
+
+            elapsed = now - last_seen[host]
+
+            if elapsed > CLIENT_TIMEOUT:
+                print(f"[ALERTA] El cliente '{host}' no ha enviado información en {elapsed:.1f} segundos.\n")
+
+
+def echoClients(s: socket.socket, archivoHosts: str, known_hosts: set[str]) -> None:
     s.listen(5)
+    print("[INFO]Servidor listo para aceptar conexiones...\n")
+
     while True:
         conn, address = s.accept()
-        print(f"[INFO]Conectado con {address}\n")
-        try:
-            data = conn.recv(1024) # Receive the host name of the client
-            if not data:
-                print(f"[ALERTA]Socket {conn} de la dirección {address} NO responde y puede estar en riesgo.\n")
-            else:
-                print("[DEBUG]Mensaje recibido: ", data, "\n") # Data should be the host name of the client we're connected to
-                SIP.writeClientInfo(IPaddress=data, IPstorageFile=archivoHosts) # Add the host to the storage file
-                pass # Skip ahead to the next call of this function
+        print(f"[INFO] Conectado con {address}")
 
-        except socket.error:
-            print("[ERROR]Error de socket.\n")
+        try:
+            data = conn.recv(1024)
+
+            if not data:
+                print(f"[ALERTA] El socket {address} no envió datos.")
+            else:
+                print("[DEBUG] Mensaje recibido")
+
+                hostname = data.decode('utf-8', errors='ignore').strip()
+                print(f"[DEBUG] Hostname decodificado: '{hostname}'")
+
+                # Registrar última vez visto
+                last_seen[hostname] = time.time()
+
+                # Guardar solo si es nuevo
+                if hostname not in known_hosts:
+                    print(f"[INFO] Nuevo cliente detectado: '{hostname}', guardando...")
+                    SIP.writeClientInfo(IPaddress=hostname, IPstorageFile=archivoHosts)
+                    known_hosts.add(hostname)
+                else:
+                    print(f"[INFO] Cliente '{hostname}' ya registrado. No se añade.")
+
+        except socket.error as e:
+            print("[ERROR] Error de socket:", e)
 
         finally:
             conn.close()
-    
-        print("[DEBUG]Conexión Terminada")
-        pass
+            print("[DEBUG] Conexión terminada\n")
 
 
 if __name__ == "__main__":
-    print("[INFO]Esta versión del programa funciona con sockets TCP, y requiere que cada host tenga un proceso de cliente activo en todo momento.\n")
-    archivoHosts = ''
+    print("[INFO]Servidor con detección de duplicados e inactividad.\n")
 
-    if len(sys.argv) < 1: # Specifies a name for the storage file.
-        archivoHosts = sys.argv[1]
-    else:
-        archivoHosts = "Hosts-Conocidos.txt" # Different name from the version of the server that uses IP addresses.
+    # Archivo de almacenamiento
+    archivoHosts = sys.argv[1] if len(sys.argv) > 1 else "Hosts-Conocidos.txt"
     SIP.defineStorageFile(fileName=archivoHosts)
 
-    host = '0.0.0.0' # We will listen from all interfaces
-    port = 21115 # Just a random socket that isn't well-known or widely used.
+    # Cargar lista inicial (evitar duplicados)
+    known_hosts = load_known_hosts(archivoHosts)
 
+    host = "0.0.0.0"
+    port = 21115
+
+    # Configurar socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Can reuse the port
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((host, port))
-    print(f"[INFO]Servidor conectado en la interfaz {host}, y el puerto: {port}")
 
-    for i in range(MAX_THREAD_AMMOUNT):
-        i = threading.Thread(target=echoClients, args=(host, port))
-        i.start()
-        
+    print(f"[INFO]Servidor iniciado en {host}:{port}\n")
+
+    # Hilo que monitoriza inactividad
+    threading.Thread(target=monitor_clients, args=(known_hosts,), daemon=True).start()
+
+    # Main server loop
+    echoClients(s, archivoHosts, known_hosts)

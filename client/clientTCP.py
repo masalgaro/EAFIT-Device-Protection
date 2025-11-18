@@ -1,8 +1,14 @@
 ## Client program that connects with serverTCP.
 
-import socket, time
+import socket, time, sys
 
 print("[INFO]Este es el programa para los clientes/dispositivos de uso público.\n")
+
+serverAddr = ''
+if (len(sys.argv) < 1):
+    serverAddr = '127.0.0.1' # Loopback addr by default for now
+else:
+    serverAddr = str(sys.argv[1])
 
 while True:
     host = socket.gethostname()

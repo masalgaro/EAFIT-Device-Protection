@@ -22,7 +22,9 @@ La ventaja de esta implementación es la facilidad de uso y la eficiencia, ya qu
 
 El archivo del servidor se encuentra dentro de la carpeta "server" bajo el nombre de `serverTCP.py`, el archivo del cliente se encuentra dentro de "client" como `clientTCP.py`.  
 Esta implementación **no usa librerias externas** a las que Python ofrece por defecto, pero sí requiere que todos los dispositivos que se desean monitorear ejecuten y mantengan abierto el programa para el cliente, lo que podría tener impactos menores en el rendimiento.  
-La ventaja de esta implementación es que es escalable y versátil en espacios donde las direcciones IP pueden cambiar con el tiempo, ya que en vez de fijarse en una dirección específica se fija en el nombre del host del cliente.
+La ventaja de esta implementación es que es escalable y versátil en espacios donde las direcciones IP pueden cambiar con el tiempo, ya que en vez de fijarse en una dirección específica se fija en el nombre del host del cliente.  
+
+Para el cliente es necesario pasar como argumento la dirección IP del servidor, de la forma `python3 clientTCP.py [IP_ADDR]` como por ejemplo: `python3 clientTCP.py 127.0.0.1`, esto se hace con el objetivo de tener seguridad de que los dispositivos si envíen la información al servidor de forma correcta y no se crucen los datos con otros clientes.
 
 ## Dependencias
 

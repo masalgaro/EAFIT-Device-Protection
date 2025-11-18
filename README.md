@@ -18,6 +18,12 @@ python3 serverTCP.py Host-Conocidos.txt # Usando la versión con sockets
 Se encuentra dentro de la carpeta "server" como el archivo `server.py`. Consiste en una aplicación simple que utiliza el protocolo *ICMP* para comprobar la conectividad con direcciones IP que conozca. Para que este programa funcione se deben agregar direcciones IP a una lista, por lo que presenta limitaciones en redes más complejas donde las direcciones IP puedan cambiar. Puede ser una implementación útil en redes locales donde el administrador de la red conoce las direcciones IP de los dispositivos en su interior.  
 La ventaja de esta implementación es la facilidad de uso y la eficiencia, ya que la única libreria externa que requiere es **[icmplib](https://pypi.org/project/icmplib/)** para realizar ping, y no se requiere un programa para los clientes, minimizando el consumo de recursos.  
 
+Para instalar la libreria de ICMP, se recomienda usar el archivo de `requirements.txt` para garantizar estabilidad.
+
+```bash
+pip install -r requirements.txt # Dentro de la carpeta/directorio donde se encuentra el proyecto.
+```
+
 ### Edición de cliente-servidor con sockets
 
 El archivo del servidor se encuentra dentro de la carpeta "server" bajo el nombre de `serverTCP.py`, el archivo del cliente se encuentra dentro de "client" como `clientTCP.py`.  

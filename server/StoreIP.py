@@ -12,7 +12,7 @@ class StoreIPAddress:
             print("[INFO]Archivo de almacenamiento ya existe con este nombre.")
         return
 
-    def writeIPAddress(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address and returns an int to indicate if it was added succesfully or not
+    def writeClientInfo(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address and returns an int to indicate if it was added succesfully or not
         try:
             with open(IPstorageFile, 'a') as storageFile:
                 storageFile.write(IPaddress + "\n")
@@ -22,7 +22,7 @@ class StoreIPAddress:
             print("[ERROR]Error accediendo al archivo. Error 0")
             return 0 # Returns 0 if it couldn't write the IP address.
     
-    def deleteIPAddress(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address that needs to be deleted from the file
+    def deleteClientInfo(IPaddress: str, IPstorageFile: str) -> int: # Receives the IP address that needs to be deleted from the file
         # first it checks if the IP is in the list
         storageFile = open(IPstorageFile, 'r')
         lines = storageFile.readlines() # Stores all the addresses in a list

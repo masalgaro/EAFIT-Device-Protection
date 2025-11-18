@@ -2,20 +2,21 @@
 
 import socket, time, sys
 
+if len(sys.argv) < 1:
+    print("[ERROR]El programa requiere que se agregue una dirección IP para el servidor al ejecutarse.")
+    print("[ERROR]El método de ejecución debe ser similar a: python3 clientTCP.py 127.0.0.1")
+    sys.exit(1)
+
 print("[INFO]Este es el programa para los clientes/dispositivos de uso público.\n")
-
 serverAddr = ''
-if (len(sys.argv) < 1):
-    serverAddr = '127.0.0.1' # Loopback addr by default for now
-else:
-    serverAddr = str(sys.argv[1])
-
+serverAddr = sys.argv[1]
+print(f"[INFO]El cliente va a conectarse al servidor con la dirección IP {serverAddr}")
 while True:
     host = socket.gethostname()
     hostSend = bytes(host, "utf-8")
     port = 21115
     cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cliente.connect(('127.0.0.1', port))
+    cliente.connect((serverAddr, port))
     try:
         cliente.sendall(hostSend) # Send the host name directly.
         print("[DEBUG]Enviado el nombre del host al servidor.\n")

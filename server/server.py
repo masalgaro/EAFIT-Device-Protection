@@ -1,7 +1,9 @@
 ## Main server program: it will send pings to all stored IPs
+
 from icmplib import ping, multiping
-import sys # Allows us to read the arguments when the program is called on the terminal.  
+import sys 
 from StoreIP import StoreIPAddress as SIP 
+
 
 def updateIPList(IPAddressFile: str) -> list[str] or None:
     try:
@@ -53,12 +55,7 @@ if __name__ == "__main__":
     else:
         arcihvoPrueba = "Direcciones.txt"
     SIP.defineStorageFile(arcihvoPrueba)
-    SIP.writeIPAddress(IPaddress="127.0.0.1", IPstorageFile=arcihvoPrueba)
-    SIP.writeIPAddress(IPaddress="1.1.1.1", IPstorageFile=arcihvoPrueba)
+    SIP.writeClientInfo(IPaddress="127.0.0.1", IPstorageFile=arcihvoPrueba)
+    SIP.writeClientInfo(IPaddress="1.1.1.1", IPstorageFile=arcihvoPrueba)
     listaIP = updateIPList(arcihvoPrueba)
     pingKnownIPs(listaIP)
-
-# Establecer hilos para manejar múltiples clientes.
-# Es posible hacer esto también con protocolo UDP.
-# Realizar el programa para el cliente.
-# Detectar el nombre del host.

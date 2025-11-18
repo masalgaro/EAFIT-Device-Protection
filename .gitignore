@@ -208,3 +208,5 @@ __marimo__/
 
 # TXT files
 *.txt
+# DO INCLUDE THE REQUIREMENTS THING
+!requirements.txt

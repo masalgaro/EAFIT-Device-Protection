@@ -1,15 +1,61 @@
-# Main server program: it will send pings to all stored IPs
-# Needs a way to store IPs in a file it can read over and over
+## Main server program: it will send pings to all stored IPs
 
+from icmplib import ping, multiping
+import sys 
 from StoreIP import StoreIPAddress as SIP 
 
-SIP.defineStorageFile("Direcciones.txt")
-if (SIP.writeIPAddress("127.0.0.1", "Direcciones.txt") == 1):
-    print("Funciona correctamente")
-else:
-    print("Vida hp")
 
-# lets do the code for reals lmao
+def updateIPList(IPAddressFile: str) -> list[str] or None:
+    try:
+        with open(IPAddressFile, 'r') as addressList:
+            IPs = addressList.read().splitlines()
+            # debug stuff
+            print(type(IPs), IPs)
+            addressList.close()
+            return IPs
+    except:
+        print("Error accediendo a la lista de direcciones IP")
+        return
 
-def pingKnownIPs():
-    pass
+def pingKnownIPs(IPList: list[str]) -> int:
+    deadHosts = 0
+    if (len(IPList) > 1):
+        print("Haciendo ping a las IPs guardadas...")
+        hosts = multiping(IPList, count=5, interval=0.6, timeout=3, privileged=False)
+        for host in hosts:
+            if not host.is_alive:
+                print("================ALERTA================")
+                print(f"{host.address} no responde")
+                print("================ALERTA================")
+                deadHosts += 1
+        print("Pings y checkeos finalizados.")
+        if deadHosts != 0:
+            print(f"Hay {deadHosts} clientes que no responden y pueden estar en riesgo.")
+        return deadHosts
+    elif (len(IPList) == 0):
+        print("No hay ninguna IP guardada en la lista.")
+        return deadHosts
+    print("Haciendo ping a la IP guardada.")
+    cliente = ping(IPList, count=5, interval=0.6, timeout=3, privileged=False)
+    if not cliente.is_alive:
+        print("================ALERTA================")
+        print(f"{cliente.address} no responde")
+        print("================ALERTA================")
+        deadHosts += 1
+    return deadHosts
+
+            
+
+# The actual listening to IPs thing should happen always so idk if a separate function would really be needed.
+if __name__ == "__main__":
+    print("[INFO]Esta versión del programa funciona realizando ping a direcciones IP conocidas.\nEs posible que sea impreciso según la configuración de la red local.")
+    arcihvoPrueba = ""
+    if len(sys.argv) < 1: # Specifies a name for the storage file.
+        arcihvoPrueba = sys.argv[1]
+    else:
+        arcihvoPrueba = "Direcciones.txt"
+    SIP.defineStorageFile(arcihvoPrueba)
+    SIP.writeClientInfo(IPaddress="127.0.0.1", IPstorageFile=arcihvoPrueba)
+    SIP.writeClientInfo(IPaddress="1.1.1.1", IPstorageFile=arcihvoPrueba)
+    listaIP = updateIPList(arcihvoPrueba)
+    pingKnownIPs(listaIP)
